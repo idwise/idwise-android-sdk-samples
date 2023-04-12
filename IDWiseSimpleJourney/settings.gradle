@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'http://mobile-sdk.idwise.ai/releases/'
+            allowInsecureProtocol = true
+        }
+        maven { url 'https://jitpack.io' }
+    }
+}
+rootProject.name = "IDWiseSimpleJourney"
+include ':app'
