@@ -91,11 +91,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun listeners() {
 
-        binding.btnNewJourney?.setOnClickListener {
+        binding.btnNewJourney.setOnClickListener {
             preferences.clear()
             IDWise.unloadSDK()
             recreate()
             showProgressDialog()
+        }
+
+        //Step ID may vary as for default journey 0 is used for document front and 1 for document back
+        binding.btnJourneyStepOne.setOnClickListener {
+            IDWise.startStep(this@MainActivity,"0")
+        }
+
+        //Step ID may vary as for default journey 2 is used for selfie
+        binding.btnJourneyStepTwo.setOnClickListener {
+            IDWise.startStep(this@MainActivity,"2")
         }
 
         /**
@@ -161,11 +171,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onJourneyCancelled(journeyInfo: JourneyInfo?) {
-            toast("Journey Cancelled")
-            preferences.reset()
-        }
-
-        override fun onJourneyInterrupted(journeyInfo: JourneyInfo?) {
             toast("Journey Cancelled")
             preferences.reset()
         }

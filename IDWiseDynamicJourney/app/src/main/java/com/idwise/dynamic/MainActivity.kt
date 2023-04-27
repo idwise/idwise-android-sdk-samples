@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeSDK() {
         //TODO Change this clientKey with one provided by IDWise
         val clientKey = Constants.CLIENT_KEY
-        IDWise.initialize(clientKey, IDWiseSDKTheme.LIGHT) {
+        IDWise.initialize(clientKey) {
             showInfoLoginDialog(getString(R.string.error), it?.message ?: "N/A")
             hideProgressDialog()
         }
@@ -95,6 +95,16 @@ class MainActivity : AppCompatActivity() {
             IDWise.unloadSDK()
             recreate()
             showProgressDialog()
+        }
+
+        //Step ID may vary as for default journey 0 is used for document front and 1 for document back
+        binding.btnJourneyStepOne.setOnClickListener {
+            IDWise.startStep(this@MainActivity,"0")
+        }
+
+        //Step ID may vary as for default journey 2 is used for selfie
+        binding.btnJourneyStepTwo.setOnClickListener {
+            IDWise.startStep(this@MainActivity,"2")
         }
 
         /**
@@ -160,11 +170,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onJourneyCancelled(journeyInfo: JourneyInfo?) {
-            toast("Journey Cancelled")
-            preferences.reset()
-        }
-
-        override fun onJourneyInterrupted(journeyInfo: JourneyInfo?) {
             toast("Journey Cancelled")
             preferences.reset()
         }
