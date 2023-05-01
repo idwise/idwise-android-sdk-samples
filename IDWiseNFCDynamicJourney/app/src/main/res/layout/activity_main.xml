@@ -23,32 +23,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:fontFamily="@font/mulish_bold"
                 android:gravity="center"
                 android:text="Welcome to"
                 android:textColor="@color/black"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:fontFamily="@font/mulish_bold"
                 android:gravity="center"
                 android:text="Verification Journey"
                 android:textColor="@color/black"
-                android:textSize="25sp"
-                android:textStyle="bold" />
+                android:textSize="26sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
+                android:fontFamily="@font/mulish_bold"
                 android:gravity="center"
                 android:text="Please take some time to verify your identity"
                 android:textColor="@color/black"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_sub_title"
@@ -70,40 +70,41 @@
 
             <Button
                 android:id="@+id/btnJourneyStepOne"
+                style="@style/button_filled"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                app:layout_constraintWidth_percent="0.5"
                 android:text="ID Document"
                 app:layout_constraintBottom_toTopOf="@+id/btnJourneyStepTwo"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintWidth_percent="0.5" />
 
             <Button
                 android:id="@+id/btnJourneyStepTwo"
+                style="@style/button_filled"
                 android:layout_width="0dp"
-                app:layout_constraintWidth_percent="0.5"
                 android:layout_height="60dp"
                 android:text="Selfie"
-                app:layout_constraintVertical_chainStyle="packed"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnJourneyStepOne" />
+                app:layout_constraintTop_toBottomOf="@+id/btnJourneyStepOne"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintWidth_percent="0.5" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/btnNewJourney"
+            style="@style/button_unfilled"
             android:layout_width="0dp"
             android:layout_height="@dimen/_50sdp"
             android:layout_marginBottom="20dp"
-
             android:padding="@dimen/_8sdp"
-            android:text="Start New Journey"
-            android:visibility="visible"
+            android:text="Test New Journey"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/endGuideline"
             app:layout_constraintStart_toStartOf="@id/startGuideline" />
