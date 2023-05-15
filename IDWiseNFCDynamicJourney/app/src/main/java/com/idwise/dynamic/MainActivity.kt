@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.idwise.dynamic.databinding.ActivityMainBinding
 import com.idwise.dynamic.extensions.showInfoLoginDialog
@@ -30,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     val TAG = "DynamicJourneyDemo"
 
     lateinit var binding: ActivityMainBinding
+
+    private val DOCUMENT_STEP_ID = "0"
+    private val SELFIE_STEP_ID = "1"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,12 +104,12 @@ class MainActivity : AppCompatActivity() {
 
         //Step ID may vary as for default journey 0 is used for document front and 1 for document back
         binding.btnJourneyStepOne.setOnClickListener {
-            IDWise.startStep(this@MainActivity,"0")
+            IDWise.startStep(this@MainActivity, "0")
         }
 
         //Step ID may vary as for default journey 2 is used for selfie
         binding.btnJourneyStepTwo.setOnClickListener {
-            IDWise.startStep(this@MainActivity,"2")
+            IDWise.startStep(this@MainActivity, "2")
         }
 
         /**
@@ -143,9 +147,24 @@ class MainActivity : AppCompatActivity() {
 
         override fun onStepResult(stepId: String, stepResult: StepResult?) {
             hideProgressDialog()
-
             Log.d(TAG, "onStepResult StepId $stepId")
             Log.d(TAG, "OnStepResult  $stepId \n ${stepResult?.toString()}")
+
+            if (stepId == DOCUMENT_STEP_ID && stepResult?.nfcResult != null) {
+                // val age = stepResult.nfcResult?.extractedFields?.get("Age")
+                // val sex = stepResult.nfcResult?.extractedFields?.get("Sex")
+                // val given_name = stepResult.nfcResult?.extractedFields?.get("Given name")
+                // val surname = stepResult.nfcResult?.extractedFields?.get("Surname")
+
+                val fields =
+                    stepResult.nfcResult?.extractedFields?.map { "${it.key}: ${it.value}" }
+
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("NFC Extracted Fields")
+                    .setMessage(fields?.joinToString("\n"))
+                    .setPositiveButton("Ok", null)
+                    .create().show()
+            }
         }
 
         override fun onStepConfirmed(stepId: String) {
