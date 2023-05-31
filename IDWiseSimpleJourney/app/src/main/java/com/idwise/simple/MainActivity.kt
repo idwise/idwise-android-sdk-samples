@@ -9,6 +9,7 @@ import com.idwise.sdk.IDWiseSDKCallback
 import com.idwise.sdk.data.models.IDWiseSDKError
 import com.idwise.sdk.data.models.JourneyInfo
 import com.idwise.simple.databinding.ActivityMainBinding
+import com.idwise.sdk.data.models.IDWiseSDKTheme
 import com.idwise.simple.extensions.preventMultipleTap
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeSDK() {
-        IDWise.initialize("<CLIENT_KEY>") { error: IDWiseSDKError? ->
+        IDWise.initialize("<CLIENT_KEY>", IDWiseSDKTheme.SYSTEM_DEFAULT) { error: IDWiseSDKError? ->
 
             Log.v("RAW_EVENT", "onError: ${error?.message}")
         }
