@@ -19,6 +19,7 @@ import com.idwise.sdk.data.models.IDWiseSDKError
 import com.idwise.sdk.data.models.IDWiseSDKTheme
 import com.idwise.sdk.data.models.JourneyInfo
 import com.idwise.sdk.data.models.StepResult
+import com.idwise.sdk.data.models.IDWiseSDKTheme
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeSDK() {
         //TODO Change this clientKey with one provided by IDWise
         val clientKey = Constants.CLIENT_KEY
-        IDWise.initialize(clientKey) {
+        IDWise.initialize(clientKey, IDWiseSDKTheme.SYSTEM_DEFAULT) {
             showInfoLoginDialog(getString(R.string.error), it?.message ?: "N/A")
             hideProgressDialog()
         }
