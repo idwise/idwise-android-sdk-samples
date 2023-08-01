@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <path
+        android:fillColor="@color/menu_progress_status_tick_color"
+        android:pathData="M4.867,18.774L5.22,18.42L4.867,18.774L10.44,24.347C11.155,25.062 12.312,25.062 13.027,24.347L27.134,10.24C27.849,9.525 27.849,8.368 27.134,7.653C26.418,6.938 25.262,6.938 24.547,7.653C24.547,7.653 24.547,7.653 24.546,7.653L11.727,20.46L7.454,16.187C6.738,15.471 5.582,15.471 4.867,16.187C4.151,16.902 4.151,18.058 4.867,18.774Z" />
+</vector>

@@ -63,51 +63,142 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/consLayoutSteps"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/btnNewJourney"
             app:layout_constraintTop_toBottomOf="@+id/header">
 
-            <Button
-                android:id="@+id/btnJourneyStepOne"
-                style="@style/button_filled"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:text="ID Document"
-                app:layout_constraintBottom_toTopOf="@+id/btnJourneyStepTwo"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/consLayoutStepOne"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/consLayoutStepTwo"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:layout_constraintWidth_percent="0.5" />
+                app:layout_constraintVertical_chainStyle="packed">
 
-            <Button
-                android:id="@+id/btnJourneyStepTwo"
-                style="@style/button_filled"
-                android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:text="Selfie"
+                <Button
+                    android:id="@+id/btnJourneyStepOne"
+                    style="@style/button_filled"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:text="ID Document"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_constraintWidth_percent="0.5" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivInfoStepOne"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnJourneyStepOne"
+                    app:layout_constraintStart_toEndOf="@+id/btnJourneyStepOne"
+                    app:layout_constraintTop_toTopOf="@+id/btnJourneyStepOne"
+                    app:srcCompat="@drawable/ic_status_tick"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/consLayoutStepTwo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnJourneyStepOne"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:layout_constraintWidth_percent="0.5" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/consLayoutStepOne"
+                app:layout_constraintVertical_chainStyle="packed">
+
+                <Button
+                    android:id="@+id/btnJourneyStepTwo"
+                    style="@style/button_filled"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:text="Selfie"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintWidth_percent="0.5" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivInfoStepTwo"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnJourneyStepTwo"
+                    app:layout_constraintStart_toEndOf="@+id/btnJourneyStepTwo"
+                    app:layout_constraintTop_toTopOf="@+id/btnJourneyStepTwo"
+                    app:srcCompat="@drawable/ic_status_tick"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/consLayoutCompleteStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/btnNewJourney"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"
+            app:layout_constraintStart_toStartOf="@+id/startGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/consLayoutSteps"
+            tools:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivCompleteStatus"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="@dimen/_32sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_status_tick" />
+
+            <TextView
+                android:id="@+id/tvCompleteStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:fontFamily="@font/mulish_bold"
+                android:gravity="center"
+                android:text="Congratulations! Your verification has been completed"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivCompleteStatus" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <Button
             android:id="@+id/btnNewJourney"
             style="@style/button_unfilled"
             android:layout_width="0dp"
             android:layout_height="@dimen/_50sdp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/_5sdp"
             android:padding="@dimen/_8sdp"
             android:text="Test New Journey"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/ivLogoPoweredBy"
             app:layout_constraintEnd_toEndOf="@id/endGuideline"
             app:layout_constraintStart_toStartOf="@id/startGuideline" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivLogoPoweredBy"
+            style="@style/logo_powered_by"
+            android:layout_marginBottom="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/logo_powered_by" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/startGuideline"
@@ -122,7 +213,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_end="20dp" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
