@@ -3,6 +3,8 @@ package com.idwise.dynamic
 import android.app.ProgressDialog
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -268,7 +270,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun toast(message: String) {
         Log.d(TAG, message)
-        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun showProgressDialog() {
