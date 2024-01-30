@@ -235,6 +235,10 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onStepConfirmed Step $stepId confirmed!!")
         }
 
+        override fun onStepCancelled(stepId: String) {
+            Log.d(TAG, "onStepCancelled Step $stepId cancelled!!")
+        }
+
     }
 
     private val journeyCallback = object : IDWiseSDKCallback {

@@ -60,10 +60,6 @@ class MainActivity : AppCompatActivity() {
 
                 }
 
-                override fun onJourneyInterrupted(journeyInfo: JourneyInfo?) {
-
-                }
-
                 override fun onError(error: IDWiseSDKError) {
 
                     Log.v("RAW_EVENT", "onError: ${error.message.toString()}")
