@@ -9,5 +9,9 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="blue_color">#2A4CD0</color>
-
+    <color name="menu_progress_color">#BCBCC0</color>
+    <color name="menu_status_default_color">#8E8E93</color>
+    <color name="menu_status_error_color">#D70015</color>
+    <color name="menu_status_success_color">#32BEA6</color>
+    <color name="menu_progress_tick_color">#248A3D</color>
 </resources>

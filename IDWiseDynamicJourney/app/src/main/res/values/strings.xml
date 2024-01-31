@@ -3,4 +3,10 @@
 
     <string name="ok">OK</string>
     <string name="error">Error</string>
+    <string name="menu_status_submitted">Submitted</string>
+    <string name="menu_status_in_progress">Processing</string>
+    <string name="menu_status_not_submitted">Not Submitted</string>
+    <string name="menu_status_incomplete">Incomplete</string>
+    <string name="menu_step_document">Document</string>
+    <string name="menu_step_selfie">Selfie</string>
 </resources>
