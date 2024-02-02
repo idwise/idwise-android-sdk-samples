@@ -15,7 +15,11 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.idwise.dynamic.databinding.ActivityMainBinding
+import com.idwise.dynamic.databinding.ItemStepBinding
 import com.idwise.dynamic.databinding.LayoutStepDetailBinding
+import com.idwise.dynamic.extensions.setColor
+import com.idwise.dynamic.extensions.setDrawable
+import com.idwise.dynamic.extensions.setImageTint
 import com.idwise.dynamic.extensions.showInfoLoginDialog
 import com.idwise.dynamic.utils.AppPreferences
 import com.idwise.dynamic.utils.FileStorageHelper
@@ -23,11 +27,9 @@ import com.idwise.dynamic.utils.FileUploadHelper
 import com.idwise.sdk.IDWise
 import com.idwise.sdk.IDWiseSDKCallback
 import com.idwise.sdk.IDWiseSDKStepCallback
-import com.idwise.sdk.data.models.IDWiseSDKError
-import com.idwise.sdk.data.models.JourneyInfo
-import com.idwise.sdk.data.models.StepResult
-import com.idwise.sdk.data.models.IDWiseSDKTheme
+import com.idwise.sdk.data.models.*
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity() {
@@ -40,10 +42,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fileUploadHelper: FileUploadHelper
 
     private val STEP_ID_DOCUMENT = "0";
+    private val STEP_ID_DOCUMENT_NAME = "Document";
     private val STEP_SELFIE = "2";
+    private val STEP_SELFIE_NAME = "Selfie";
 
     lateinit var journeyId: String
     private var stepResultsMap = HashMap<String, StepResult?>()
+    private val stepsInProgress = HashMap<String, Boolean>(HashMap())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +62,13 @@ class MainActivity : AppCompatActivity() {
         fileUploadHelper = FileUploadHelper().init(this)
 
         listeners()
-
+        resetStepItem()
         initializeSDK()
+    }
+
+    private fun resetStepItem() {
+        reflectStepItem(STEP_ID_DOCUMENT_NAME, binding.layoutDocument, null)
+        reflectStepItem(STEP_SELFIE_NAME, binding.layoutSelfie, null)
     }
 
     private fun initializeSDK() {
@@ -75,7 +85,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             resumeJourney(preferences.journeyId)
         }
-
     }
 
 
@@ -107,16 +116,10 @@ class MainActivity : AppCompatActivity() {
             Log.v(TAG, Gson().toJson(summary))
 
             summary?.stepSummaries?.find { it.definition.stepId.toString() == STEP_ID_DOCUMENT }
-                ?.let {
-                    binding.btnJourneyStepOne.isEnabled = it.result?.isConcluded != true
-                    binding.ivInfoStepOne.isVisible = it.result?.isConcluded == true
-                }
+                ?.let { reflectStepItem(STEP_ID_DOCUMENT_NAME, binding.layoutDocument, it) }
 
             summary?.stepSummaries?.find { it.definition.stepId.toString() == STEP_SELFIE }
-                ?.let {
-                    binding.btnJourneyStepTwo.isEnabled = it.result?.isConcluded != true
-                    binding.ivInfoStepTwo.isVisible = it.result?.isConcluded == true
-                }
+                ?.let { reflectStepItem(STEP_SELFIE_NAME, binding.layoutSelfie, it) }
 
             if (summary?.isCompleted == true) {
                 binding.consLayoutCompleteStatus.isVisible = true
@@ -126,6 +129,75 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun reflectStepItem(
+        stepName: String,
+        binding: ItemStepBinding,
+        stepSummary: JourneySummary.StepSummary? = null
+    ) {
+        binding.tvTitle.text = stepName
+        binding.tvStatus.setColor(R.color.menu_status_default_color)
+        binding.imgViewStatus.setImageTint(R.color.menu_progress_color)
+        binding.progressBar.isVisible = false
+        binding.imgViewStatus.isVisible = true
+
+        if (isStepUploadingInProgress(stepSummary?.definition?.stepId?.toString())) {
+            binding.progressBar.isVisible = true
+            binding.imgViewStatus.isVisible = false
+            binding.tvStatus.text =
+                getString(R.string.menu_status_in_progress)
+            binding.imgViewStatus.setDrawable(R.drawable.ic_menu_arrow_right)
+        } else {
+            when (stepSummary?.result?.status) {
+                StepStatus.SUBMITTED -> {
+                    if (stepSummary.result?.isConcluded == true) {
+                        binding.tvStatus.text =
+                            getString(R.string.menu_status_submitted)
+                        binding.imgViewStatus.setImageTint(R.color.menu_progress_tick_color)
+                        binding.imgViewStatus.setDrawable(R.drawable.ic_status_tick)
+                        disableStepItem(stepSummary.definition.stepId?.toString())
+                    } else if (stepSummary.result?.hasPassedRules == false) {
+                        binding.tvStatus.text = stepSummary.result?.errorUserFeedbackTitle
+                        binding.tvStatus.setColor(R.color.menu_status_error_color)
+                        binding.imgViewStatus.setDrawable(R.drawable.ic_menu_arrow_right)
+                    }
+                }
+                StepStatus.INCOMPLETE -> {
+                    binding.tvStatus.text = getString(R.string.menu_status_incomplete)
+                    binding.imgViewStatus.setDrawable(R.drawable.ic_menu_arrow_right)
+                    if (stepSummary.result?.isConcluded != true) {
+                        binding.imgViewStatus.setDrawable(com.idwise.sdk.R.drawable.ic_arrow_right)
+                    }
+                }
+                else -> {
+                    binding.tvStatus.text =
+                        getString(R.string.menu_status_not_submitted)
+                    binding.imgViewStatus.setDrawable(R.drawable.ic_menu_arrow_right)
+                    binding.thumbnail.setDrawable(R.drawable.ic_idwise_logo)
+                }
+            }
+        }
+
+        stepSummary?.definition?.stepId?.let { id ->
+            FileStorageHelper.getBitmap(this@MainActivity, preferences.journeyId + "_" + id)
+                ?.let {
+                    binding.thumbnail.setImageBitmap(it)
+                }
+        }
+    }
+
+    private fun isStepUploadingInProgress(stepId: String?) = stepsInProgress[stepId] == true
+
+    private fun enableStepItem() {
+        binding.layoutDocument.root.isEnabled = true
+        binding.layoutSelfie.root.isEnabled = true
+    }
+
+    private fun disableStepItem(stepId: String?) {
+        when (stepId) {
+            STEP_ID_DOCUMENT -> binding.layoutDocument.root.isEnabled = false
+            STEP_SELFIE -> binding.layoutSelfie.root.isEnabled = false
+        }
+    }
 
     private fun listeners() {
 
@@ -134,31 +206,24 @@ class MainActivity : AppCompatActivity() {
             IDWise.unloadSDK()
             recreate()
             showProgressDialog()
-
             journeyId = ""
+            enableStepItem()
             stepResultsMap.clear()
-            binding.ivInfoStepOne.isVisible = false
-            binding.ivInfoStepTwo.isVisible = false
+            resetStepItem()
+            FileStorageHelper.deleteBitmaps(this@MainActivity)
+            stepsInProgress.clear()
             binding.consLayoutCompleteStatus.isVisible = false
         }
 
         //Step ID may vary as for default journey 0 is used for document front and 1 for document back
-        binding.btnJourneyStepOne.setOnClickListener {
+        binding.layoutDocument.root.setOnClickListener {
             IDWise.startStep(this@MainActivity, STEP_ID_DOCUMENT)
         }
 
         //Step ID may vary as for default journey 2 is used for selfie
-        binding.btnJourneyStepTwo.setOnClickListener {
+        binding.layoutSelfie.root.setOnClickListener {
             IDWise.startStep(this@MainActivity, STEP_SELFIE)
         }
-
-        /*binding.ivInfoStepOne.setOnClickListener {
-            showBottomSheetDialog(STEP_ID_DOCUMENT)
-        }
-
-        binding.ivInfoStepTwo.setOnClickListener {
-            showBottomSheetDialog(STEP_SELFIE)
-        }*/
 
         /**
          * Here is a sample of how a user can select a file from storage
@@ -219,10 +284,13 @@ class MainActivity : AppCompatActivity() {
                     croppedBitmap
                 )
             }
+            stepsInProgress[stepId] = true
+            observeJourneySummary()
         }
 
         override fun onStepResult(stepId: String, stepResult: StepResult?) {
             hideProgressDialog()
+            stepsInProgress[stepId] = false
 
             stepResultsMap[stepId] = stepResult
             observeJourneySummary()
@@ -235,6 +303,10 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onStepConfirmed Step $stepId confirmed!!")
         }
 
+        override fun onStepCancelled(stepId: String) {
+            Log.d(TAG, "onStepCancelled Step $stepId cancelled!!")
+        }
+
     }
 
     private val journeyCallback = object : IDWiseSDKCallback {
@@ -243,6 +315,7 @@ class MainActivity : AppCompatActivity() {
             hideProgressDialog()
             journeyId = journeyInfo.journeyId
             preferences.journeyId = journeyInfo.journeyId
+            binding.consLayoutSteps.isVisible = true
         }
 
         override fun onJourneyResumed(journeyInfo: JourneyInfo) {
@@ -250,6 +323,7 @@ class MainActivity : AppCompatActivity() {
             journeyId = journeyInfo.journeyId
             observeJourneySummary()
             toast("Journey Resumed ${journeyInfo.journeyId}")
+            binding.consLayoutSteps.isVisible = true
         }
 
         override fun onJourneyCompleted(journeyInfo: JourneyInfo, isSucceeded: Boolean) {
@@ -275,7 +349,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showProgressDialog() {
+    private fun showProgressDialog() {
         if (progress.isShowing) return
         progress.setMessage("Please Wait")
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER)

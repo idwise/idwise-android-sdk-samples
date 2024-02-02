@@ -64,83 +64,39 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/consLayoutSteps"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/btnNewJourney"
-            app:layout_constraintTop_toBottomOf="@+id/header">
+            android:layout_marginTop="@dimen/_10sdp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/endGuideline"
+            app:layout_constraintStart_toStartOf="@id/startGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/header"
+            tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/consLayoutStepOne"
+                android:id="@+id/consLayoutDocument"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/consLayoutStepTwo"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed">
+                app:layout_constraintTop_toTopOf="parent">
 
-                <Button
-                    android:id="@+id/btnJourneyStepOne"
-                    style="@style/button_filled"
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:text="ID Document"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed"
-                    app:layout_constraintWidth_percent="0.5" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/ivInfoStepOne"
-                    android:layout_width="@dimen/_28sdp"
-                    android:layout_height="@dimen/_28sdp"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnJourneyStepOne"
-                    app:layout_constraintStart_toEndOf="@+id/btnJourneyStepOne"
-                    app:layout_constraintTop_toTopOf="@+id/btnJourneyStepOne"
-                    app:srcCompat="@drawable/ic_status_tick"
-                    tools:visibility="visible" />
-
+                <include
+                    android:id="@+id/layoutDocument"
+                    layout="@layout/item_step" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/consLayoutStepTwo"
+                android:id="@+id/consLayoutSelfie"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/consLayoutStepOne"
-                app:layout_constraintVertical_chainStyle="packed">
+                app:layout_constraintTop_toBottomOf="@+id/consLayoutDocument">
 
-                <Button
-                    android:id="@+id/btnJourneyStepTwo"
-                    style="@style/button_filled"
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:text="Selfie"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintWidth_percent="0.5" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/ivInfoStepTwo"
-                    android:layout_width="@dimen/_28sdp"
-                    android:layout_height="@dimen/_28sdp"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnJourneyStepTwo"
-                    app:layout_constraintStart_toEndOf="@+id/btnJourneyStepTwo"
-                    app:layout_constraintTop_toTopOf="@+id/btnJourneyStepTwo"
-                    app:srcCompat="@drawable/ic_status_tick"
-                    tools:visibility="visible" />
-
+                <include
+                    android:id="@+id/layoutSelfie"
+                    layout="@layout/item_step" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/consLayoutCompleteStatus"

@@ -11,11 +11,6 @@ dependencyResolutionManagement {
         jcenter()
         google()
         mavenCentral()
-        maven {
-            url 'http://mobile-sdk.idwise.ai/releases/'
-            allowInsecureProtocol = true
-        }
-        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "IDWiseDynamicJourney"
