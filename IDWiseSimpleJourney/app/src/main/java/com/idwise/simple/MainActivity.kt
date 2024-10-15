@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
 import com.idwise.sdk.IDWise
-import com.idwise.sdk.IDWiseSDKCallback
-import com.idwise.sdk.data.models.IDWiseSDKError
-import com.idwise.sdk.data.models.JourneyInfo
+import com.idwise.sdk.IDWiseJourneyCallbacks
+import com.idwise.sdk.data.models.IDWiseError
+import com.idwise.sdk.data.models.*
 import com.idwise.simple.databinding.ActivityMainBinding
-import com.idwise.sdk.data.models.IDWiseSDKTheme
+import com.idwise.sdk.data.models.IDWiseTheme
 import com.idwise.simple.extensions.preventMultipleTap
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +28,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeSDK() {
-        IDWise.initialize("<CLIENT_KEY>", IDWiseSDKTheme.SYSTEM_DEFAULT) { error: IDWiseSDKError? ->
+        IDWise.initialize(
+            "<CLIENT_KEY>",
+            IDWiseTheme.SYSTEM_DEFAULT
+        ) { error: IDWiseError? ->
 
             Log.v("RAW_EVENT", "onError: ${error?.message}")
         }
@@ -36,35 +39,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun startJourney() {
         IDWise.startJourney(
-            this,
-            "<JOURNEY_DEFINITION_ID>",
-            "",
-            "en",
-            object : IDWiseSDKCallback {
-                override fun onJourneyStarted(journeyInfo: JourneyInfo) {
+            context = this,
+            flowId = "",
+            referenceNo = "",
+            locale = "en",
+            journeyCallbacks = object : IDWiseJourneyCallbacks {
+                override fun onJourneyStarted(journeyInfo: JourneyStartedInfo) {
+                    Log.v("RAW_EVENT", "onJourneyStarted: ${journeyInfo?.journeyId}")
 
                 }
 
-                override fun onJourneyResumed(journeyInfo: JourneyInfo) {
+                override fun onJourneyResumed(journeyInfo: JourneyResumedInfo) {
 
                 }
 
                 override fun onJourneyCompleted(
-                    journeyInfo: JourneyInfo,
-                    isSucceeded: Boolean
+                    journeyInfo: JourneyCompletedInfo
                 ) {
 
                 }
 
-                override fun onJourneyCancelled(journeyInfo: JourneyInfo?) {
+                override fun onJourneyCancelled(journeyInfo: JourneyCancelledInfo) {
 
                 }
 
-                override fun onJourneyInterrupted(journeyInfo: JourneyInfo?) {
-
-                }
-
-                override fun onError(error: IDWiseSDKError) {
+                override fun onError(error: IDWiseError) {
 
                     Log.v("RAW_EVENT", "onError: ${error.message.toString()}")
                 }

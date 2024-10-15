@@ -1,7 +1,6 @@
 package com.idwise.dynamic
 
 import android.app.ProgressDialog
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,14 +19,11 @@ import com.idwise.dynamic.extensions.showInfoLoginDialog
 import com.idwise.dynamic.utils.AppPreferences
 import com.idwise.dynamic.utils.FileStorageHelper
 import com.idwise.dynamic.utils.FileUploadHelper
-import com.idwise.sdk.IDWise
-import com.idwise.sdk.IDWiseSDKCallback
-import com.idwise.sdk.IDWiseSDKStepCallback
-import com.idwise.sdk.data.models.IDWiseSDKError
-import com.idwise.sdk.data.models.JourneyInfo
-import com.idwise.sdk.data.models.StepResult
-import com.idwise.sdk.data.models.IDWiseSDKTheme
-import java.util.*
+import com.idwise.sdk.IDWiseDynamic
+import com.idwise.sdk.IDWiseJourneyCallbacks
+import com.idwise.sdk.IDWiseStepCallbacks
+import com.idwise.sdk.data.models.*
+import java.util.UUID
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeSDK() {
         //TODO Change this clientKey with one provided by IDWise
         val clientKey = Constants.CLIENT_KEY
-        IDWise.initialize(clientKey, IDWiseSDKTheme.SYSTEM_DEFAULT) {
+        IDWiseDynamic.initialize(clientKey, IDWiseTheme.SYSTEM_DEFAULT) {
             showInfoLoginDialog(getString(R.string.error), it?.message ?: "N/A")
             hideProgressDialog()
         }
@@ -80,30 +76,29 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun startDynamicJourney() {
-        IDWise.startDynamicJourney(
-            this,
-            //TODO Change this journeyDefinitionId with one provided by IDWise
-            Constants.JOURNEY_DEFINITION_ID,
-            preferences.referenceNumber,
-            Constants.LOCALE,
-            journeyCallback,
-            stepCallback
+        IDWiseDynamic.startJourney(
+            context = this,
+            flowId = Constants.JOURNEY_DEFINITION_ID,
+            referenceNo = preferences.referenceNumber,
+            locale = Constants.LOCALE,
+            journeyCallbacks = journeyCallback,
+            stepCallbacks = stepCallback
         )
     }
 
     private fun resumeJourney(journeyId: String) {
-        IDWise.resumeDynamicJourney(
-            this,
-            Constants.JOURNEY_DEFINITION_ID,
-            journeyId,
-            Constants.LOCALE,
-            journeyCallback,
-            stepCallback
+        IDWiseDynamic.resumeJourney(
+            context = this,
+            flowId = Constants.JOURNEY_DEFINITION_ID,
+            journeyId = journeyId,
+            locale = Constants.LOCALE,
+            journeyCallbacks = journeyCallback,
+            stepCallbacks = stepCallback
         )
     }
 
     private fun observeJourneySummary() {
-        IDWise.getJourneySummary(journeyId) { summary, error ->
+        IDWiseDynamic.getJourneySummary { summary, error ->
             Log.v(TAG, Gson().toJson(summary))
 
             summary?.stepSummaries?.find { it.definition.stepId.toString() == STEP_ID_DOCUMENT }
@@ -120,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
             if (summary?.isCompleted == true) {
                 binding.consLayoutCompleteStatus.isVisible = true
-                IDWise.finishDynamicJourney(journeyId)
+                IDWiseDynamic.finishJourney()
                 preferences.clear()
             }
         }
@@ -131,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnNewJourney?.setOnClickListener {
             preferences.clear()
-            IDWise.unloadSDK()
+            IDWiseDynamic.unloadSDK()
             recreate()
             showProgressDialog()
 
@@ -144,12 +139,12 @@ class MainActivity : AppCompatActivity() {
 
         //Step ID may vary as for default journey 0 is used for document front and 1 for document back
         binding.btnJourneyStepOne.setOnClickListener {
-            IDWise.startStep(this@MainActivity, STEP_ID_DOCUMENT)
+            IDWiseDynamic.startStep(this@MainActivity, STEP_ID_DOCUMENT)
         }
 
         //Step ID may vary as for default journey 2 is used for selfie
         binding.btnJourneyStepTwo.setOnClickListener {
-            IDWise.startStep(this@MainActivity, STEP_SELFIE)
+            IDWiseDynamic.startStep(this@MainActivity, STEP_SELFIE)
         }
 
         /*binding.ivInfoStepOne.setOnClickListener {
@@ -209,59 +204,64 @@ class MainActivity : AppCompatActivity() {
         bottomSheet.show()
     }
 
-    private val stepCallback = object : IDWiseSDKStepCallback {
-        override fun onStepCaptured(stepId: String, bitmap: Bitmap?, croppedBitmap: Bitmap?) {
-            Log.d(TAG, "StepId $stepId")
-            croppedBitmap?.let {
+    private val stepCallback = object : IDWiseStepCallbacks {
+        override fun onStepCancelled(stepCancelledInfo: StepCancelledInfo) {
+            Log.d(TAG, "onStepCancelled ${stepCancelledInfo.stepId}")
+        }
+
+        override fun onStepCaptured(stepInfo: StepCapturedInfo) {
+            Log.d(TAG, "StepId ${stepInfo.stepId}")
+            stepInfo.croppedImage?.let {
                 FileStorageHelper.saveBitmap(
                     this@MainActivity,
-                    preferences.journeyId + "_" + stepId,
-                    croppedBitmap
+                    preferences.journeyId + "_" + stepInfo.stepId,
+                    it
                 )
             }
         }
 
-        override fun onStepResult(stepId: String, stepResult: StepResult?) {
+        override fun onStepResult(stepInfo: StepResultInfo) {
             hideProgressDialog()
 
-            stepResultsMap[stepId] = stepResult
+            stepResultsMap[stepInfo.stepId] = stepInfo.stepResult
             observeJourneySummary()
 
-            Log.d(TAG, "onStepResult StepId $stepId")
-            Log.d(TAG, "OnStepResult  $stepId \n ${stepResult?.toString()}")
+            Log.d(TAG, "onStepResult StepId ${stepInfo.stepId}")
+            Log.d(TAG, "OnStepResult  ${stepInfo.stepId} \n ${stepInfo.stepResult?.toString()}")
         }
 
-        override fun onStepConfirmed(stepId: String) {
-            Log.d(TAG, "onStepConfirmed Step $stepId confirmed!!")
+        override fun onStepSkipped(stepSkippedInfo: StepSkippedInfo) {
+            Log.d(TAG, "onStepSkipped ${stepSkippedInfo.stepId}")
         }
+
 
     }
 
-    private val journeyCallback = object : IDWiseSDKCallback {
-        override fun onJourneyStarted(journeyInfo: JourneyInfo) {
+    private val journeyCallback = object : IDWiseJourneyCallbacks {
+        override fun onJourneyStarted(journeyInfo: JourneyStartedInfo) {
             toast("Journey Started ${journeyInfo.journeyId}")
             hideProgressDialog()
             journeyId = journeyInfo.journeyId
             preferences.journeyId = journeyInfo.journeyId
         }
 
-        override fun onJourneyResumed(journeyInfo: JourneyInfo) {
+        override fun onJourneyResumed(journeyInfo: JourneyResumedInfo) {
             hideProgressDialog()
             journeyId = journeyInfo.journeyId
             observeJourneySummary()
             toast("Journey Resumed ${journeyInfo.journeyId}")
         }
 
-        override fun onJourneyCompleted(journeyInfo: JourneyInfo, isSucceeded: Boolean) {
+        override fun onJourneyCompleted(journeyInfo: JourneyCompletedInfo) {
             toast("Journey Completed")
         }
 
-        override fun onJourneyCancelled(journeyInfo: JourneyInfo?) {
+        override fun onJourneyCancelled(journeyInfo: JourneyCancelledInfo) {
             toast("Journey Cancelled")
             preferences.reset()
         }
 
-        override fun onError(error: IDWiseSDKError) {
+        override fun onError(error: IDWiseError) {
             hideProgressDialog()
             error.printStackTrace()
             toast("Error: " + error.message)
@@ -290,6 +290,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        IDWise.unloadSDK()
+        IDWiseDynamic.unloadSDK()
     }
 }
