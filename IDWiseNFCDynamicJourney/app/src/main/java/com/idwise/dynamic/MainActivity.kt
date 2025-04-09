@@ -2,11 +2,10 @@ package com.idwise.dynamic
 
 
 import android.app.ProgressDialog
-import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.idwise.dynamic.databinding.ActivityMainBinding
 import com.idwise.dynamic.extensions.showInfoLoginDialog
@@ -14,12 +13,20 @@ import com.idwise.dynamic.utils.AppPreferences
 import com.idwise.dynamic.utils.FileStorageHelper
 import com.idwise.dynamic.utils.FileUploadHelper
 import com.idwise.sdk.IDWise
-import com.idwise.sdk.IDWiseSDKCallback
-import com.idwise.sdk.IDWiseSDKStepCallback
-import com.idwise.sdk.data.models.IDWiseSDKError
-import com.idwise.sdk.data.models.IDWiseSDKTheme
-import com.idwise.sdk.data.models.JourneyInfo
-import com.idwise.sdk.data.models.StepResult
+import com.idwise.sdk.IDWiseDynamic
+import com.idwise.sdk.IDWiseJourneyCallbacks
+import com.idwise.sdk.IDWiseStepCallbacks
+import com.idwise.sdk.data.models.IDWiseError
+import com.idwise.sdk.data.models.IDWiseTheme
+import com.idwise.sdk.data.models.JourneyBlockedInfo
+import com.idwise.sdk.data.models.JourneyCancelledInfo
+import com.idwise.sdk.data.models.JourneyCompletedInfo
+import com.idwise.sdk.data.models.JourneyResumedInfo
+import com.idwise.sdk.data.models.JourneyStartedInfo
+import com.idwise.sdk.data.models.StepCancelledInfo
+import com.idwise.sdk.data.models.StepCapturedInfo
+import com.idwise.sdk.data.models.StepResultInfo
+import com.idwise.sdk.data.models.StepSkippedInfo
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -50,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeSDK() {
         //TODO Change this clientKey with one provided by IDWise
         val clientKey = Constants.CLIENT_KEY
-        IDWise.initialize(clientKey, IDWiseSDKTheme.LIGHT) {
+        IDWise.initialize(clientKey, IDWiseTheme.LIGHT) {
             showInfoLoginDialog(getString(R.string.error), it?.message ?: "N/A")
             hideProgressDialog()
         }
@@ -66,19 +73,19 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun startDynamicJourney() {
-        IDWise.startDynamicJourney(
+        IDWiseDynamic.startJourney(
             this,
             //TODO Change this journeyDefinitionId with one provided by IDWise
             Constants.JOURNEY_DEFINITION_ID,
             preferences.referenceNumber,
             Constants.LOCALE,
-            journeyCallback,
-            stepCallback
+            journeyCallbacks = journeyCallback,
+            stepCallbacks = stepCallback
         )
     }
 
     private fun resumeJourney(journeyId: String) {
-        IDWise.resumeDynamicJourney(
+        IDWiseDynamic.resumeJourney(
             this,
             Constants.JOURNEY_DEFINITION_ID,
             journeyId,
@@ -93,19 +100,19 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnNewJourney.setOnClickListener {
             preferences.clear()
-            IDWise.unloadSDK()
+            IDWiseDynamic.unloadSDK()
             recreate()
             showProgressDialog()
         }
 
         //Step ID may vary as for default journey 0 is used for document front and 1 for document back
         binding.btnJourneyStepOne.setOnClickListener {
-            IDWise.startStep(this@MainActivity,"0")
+            IDWiseDynamic.startStep(this@MainActivity, "0")
         }
 
         //Step ID may vary as for default journey 2 is used for selfie
         binding.btnJourneyStepTwo.setOnClickListener {
-            IDWise.startStep(this@MainActivity,"2")
+            IDWiseDynamic.startStep(this@MainActivity, "2")
         }
 
         /**
@@ -129,56 +136,66 @@ class MainActivity : AppCompatActivity() {
         }*/
     }
 
-    private val stepCallback = object : IDWiseSDKStepCallback {
-        override fun onStepCaptured(stepId: String, bitmap: Bitmap?, croppedBitmap: Bitmap?) {
-            Log.d(TAG, "StepId $stepId")
-            croppedBitmap?.let {
+    private val stepCallback = object : IDWiseStepCallbacks {
+        override fun onStepCancelled(stepCancelledInfo: StepCancelledInfo) {
+            Log.d(TAG, "onStepCancelled ${stepCancelledInfo.stepId}")
+        }
+
+        override fun onStepCaptured(stepCapturedInfo: StepCapturedInfo) {
+            Log.d(TAG, "StepId ${stepCapturedInfo.stepId}")
+            stepCapturedInfo.croppedImage?.let {
                 FileStorageHelper.saveBitmap(
                     this@MainActivity,
-                    preferences.journeyId + "_" + stepId,
-                    croppedBitmap
+                    preferences.journeyId + "_" + stepCapturedInfo.stepId,
+                    it
                 )
             }
         }
 
-        override fun onStepResult(stepId: String, stepResult: StepResult?) {
+        override fun onStepResult(stepResultInfo: StepResultInfo) {
             hideProgressDialog()
 
-            Log.d(TAG, "onStepResult StepId $stepId")
-            Log.d(TAG, "OnStepResult  $stepId \n ${stepResult?.toString()}")
+            Log.d(TAG, "onStepResult StepId ${stepResultInfo.stepId}")
+            Log.d(TAG, "OnStepResult  $stepResultInfo")
         }
 
-        override fun onStepConfirmed(stepId: String) {
-            Log.d(TAG, "onStepConfirmed Step $stepId confirmed!!")
+        override fun onStepSkipped(stepSkippedInfo: StepSkippedInfo) {
+            Log.d(TAG, "onStepSkipped ${stepSkippedInfo.stepId}")
+
         }
+
 
     }
 
-    private val journeyCallback = object : IDWiseSDKCallback {
-        override fun onJourneyStarted(journeyInfo: JourneyInfo) {
+    private val journeyCallback = object : IDWiseJourneyCallbacks {
+        override fun onJourneyStarted(journeyInfo: JourneyStartedInfo) {
             toast("Journey Started ${journeyInfo.journeyId}")
             hideProgressDialog()
             preferences.journeyId = journeyInfo.journeyId
         }
 
-        override fun onJourneyResumed(journeyInfo: JourneyInfo) {
+        override fun onJourneyResumed(journeyInfo: JourneyResumedInfo) {
             hideProgressDialog()
             toast("Journey Resumed ${journeyInfo.journeyId}")
         }
 
-        override fun onJourneyCompleted(journeyInfo: JourneyInfo, isSucceeded: Boolean) {
+        override fun onJourneyCompleted(journeyInfo: JourneyCompletedInfo) {
             toast("Journey Completed")
         }
 
-        override fun onJourneyCancelled(journeyInfo: JourneyInfo?) {
+        override fun onJourneyCancelled(journeyInfo: JourneyCancelledInfo) {
             toast("Journey Cancelled")
             preferences.reset()
         }
 
-        override fun onError(error: IDWiseSDKError) {
+        override fun onError(error: IDWiseError) {
             hideProgressDialog()
             error.printStackTrace()
             toast("Error: " + error.message)
+        }
+
+        override fun onJourneyBlocked(journeyBlockedInfo: JourneyBlockedInfo) {
+            toast("Journey Blocked ${journeyBlockedInfo.blockedTransaction?.allBlockReasons?.firstOrNull()}")
         }
     }
 
@@ -202,6 +219,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        IDWise.unloadSDK()
+        IDWiseDynamic.unloadSDK()
     }
 }

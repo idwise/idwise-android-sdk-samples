@@ -22,8 +22,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnStartJourney.setOnClickListener {
             it.preventMultipleTap()
-            initializeSDK()
-            startJourney()
+            if (IDWise.isDeviceBlocked(this@MainActivity)) {
+                Log.v(
+                    "RAW_EVENT",
+                    "Device is blocked, you can not perform verification on this device"
+                )
+            } else {
+                initializeSDK()
+                startJourney()
+            }
         }
     }
 
@@ -40,8 +47,8 @@ class MainActivity : AppCompatActivity() {
     private fun startJourney() {
         IDWise.startJourney(
             context = this,
-            flowId = "",
-            referenceNo = "",
+            flowId = "<Flow ID>",
+            referenceNo = "<User Reference No.>",
             locale = "en",
             journeyCallbacks = object : IDWiseJourneyCallbacks {
                 override fun onJourneyStarted(journeyInfo: JourneyStartedInfo) {
@@ -66,6 +73,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onError(error: IDWiseError) {
 
                     Log.v("RAW_EVENT", "onError: ${error.message.toString()}")
+                }
+
+                override fun onJourneyBlocked(journeyBlockedInfo: JourneyBlockedInfo) {
+                    Log.v("RAW_EVENT", "journeyBlockedInfo: $journeyBlockedInfo")
                 }
             }
         )

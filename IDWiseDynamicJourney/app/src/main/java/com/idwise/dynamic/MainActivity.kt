@@ -54,7 +54,11 @@ class MainActivity : AppCompatActivity() {
 
         listeners()
 
-        initializeSDK()
+        if (IDWiseDynamic.isDeviceBlocked(this@MainActivity)) {
+            Log.d(TAG, "This device is blocked")
+        } else {
+            initializeSDK()
+        }
     }
 
     private fun initializeSDK() {
@@ -265,6 +269,10 @@ class MainActivity : AppCompatActivity() {
             hideProgressDialog()
             error.printStackTrace()
             toast("Error: " + error.message)
+        }
+
+        override fun onJourneyBlocked(journeyBlockedInfo: JourneyBlockedInfo) {
+            toast("Journey Blocked ${journeyBlockedInfo.blockedTransaction?.allBlockReasons?.firstOrNull()}")
         }
     }
 
