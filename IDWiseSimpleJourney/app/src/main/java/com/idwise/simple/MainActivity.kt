@@ -1,16 +1,16 @@
 package com.idwise.simple
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.idwise.sdk.IDWise
 import com.idwise.sdk.IDWiseJourneyCallbacks
 import com.idwise.sdk.data.models.IDWiseError
 import com.idwise.sdk.data.models.*
 import com.idwise.simple.databinding.ActivityMainBinding
-import com.idwise.sdk.data.models.IDWiseTheme
 import com.idwise.simple.extensions.preventMultipleTap
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        //IDWise.isDeviceBlocked(this@MainActivity)
 
         binding.btnStartJourney.setOnClickListener {
             it.preventMultipleTap()
@@ -46,9 +47,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun startJourney() {
         IDWise.startJourney(
-            context = this,
+            context = this@MainActivity,
             flowId = "<Flow ID>",
-            referenceNo = "<User Reference No.>",
+            referenceNo = "idwise_sample_" + UUID.randomUUID().toString(),
             locale = "en",
             journeyCallbacks = object : IDWiseJourneyCallbacks {
                 override fun onJourneyStarted(journeyInfo: JourneyStartedInfo) {

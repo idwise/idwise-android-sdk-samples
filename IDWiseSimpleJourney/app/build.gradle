@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.idwise.simple'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.idwise.simple"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -41,8 +41,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+        implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.20" // Or match your Kotlin version
 
-    def idwise_version = '5.4.2'
+
+    def idwise_version = '5.5.0'
     implementation "com.idwise:android-sdk:$idwise_version"
 
     testImplementation 'junit:junit:4.13.2'

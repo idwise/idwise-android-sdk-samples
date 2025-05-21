@@ -3,6 +3,9 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url 'https://mobile-sdk.idwise.ai/releases/'
+        }
     }
 }
 dependencyResolutionManagement {
@@ -11,8 +14,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven {
-            url 'http://mobile-sdk.idwise.ai/releases/'
-            allowInsecureProtocol = true
+            url 'https://mobile-sdk.idwise.ai/releases/'
         }
         maven { url 'https://jitpack.io' }
     }
