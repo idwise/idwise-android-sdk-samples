@@ -19,16 +19,16 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
     buildFeatures {
         dataBinding true
@@ -38,16 +38,14 @@ android {
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-        implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.20" // Or match your Kotlin version
+    implementation "org.jetbrains.kotlin:kotlin-reflect:2.1.20" // Or match your Kotlin version
 
 
-    def idwise_version = '5.5.0'
+    def idwise_version = '5.7.1'
     implementation "com.idwise:android-sdk:$idwise_version"
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

@@ -6,6 +6,7 @@ pluginManagement {
         maven {
             url 'https://mobile-sdk.idwise.ai/releases/'
         }
+        maven { url 'https://jitpack.io' }
     }
 }
 dependencyResolutionManagement {

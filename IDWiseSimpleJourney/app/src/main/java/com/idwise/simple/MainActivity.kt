@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeSDK() {
         IDWise.initialize(
-            "<CLIENT_KEY>",
-            IDWiseTheme.SYSTEM_DEFAULT
+            clientKey = "<CLIENT_KEY>",
+            theme = IDWiseTheme.SYSTEM_DEFAULT
         ) { error: IDWiseError? ->
 
             Log.v("RAW_EVENT", "onError: ${error?.message}")
