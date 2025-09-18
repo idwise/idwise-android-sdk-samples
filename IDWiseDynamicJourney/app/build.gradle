@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.idwise.dynamic'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.idwise.dynamic"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -42,7 +42,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    def idwise_version = '5.4.2'
+    def idwise_version = '5.7.1'
     implementation "com.idwise:android-sdk:$idwise_version"
 
     implementation 'com.google.code.gson:gson:2.9.0'
